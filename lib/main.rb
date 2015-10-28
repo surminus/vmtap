@@ -22,7 +22,7 @@ global_opts = Trollop::options do
   EOS
 
   opt :name, "Name of VM", :type => :string
-  opt :id, "ID of VM", :type => :int
+  opt :config_file, "Specify different machines specs", :type => :string
 end
 
 cmd = ARGV.shift
@@ -33,52 +33,58 @@ token = ENV['OCEAN_TOKEN']
 unless token
   raise "Set OCEAN_TOKEN environment variable"
 end
-client = DropletKit::Client.new(access_token: token)
+$client = DropletKit::Client.new(access_token: token)
 
-vmspec = YAML.load_file('config/vmspec.yaml')
+unless global_opts[:config_file]
+  vmspec = YAML.load_file('config/vmspec.yaml')
+end
 
 config_default = vmspec["default"]
 config_region = config_default[:region]
 config_image  = config_default[:image]
 config_size   = config_default[:size]
 
-def create_machine(client, vmname, region, image, size)
+def create_machine(vmname, region, image, size)
   droplet = DropletKit::Droplet.new(name: vmname, region: region, image: image, size: size)
   puts "Creating machine called " + vmname
   client.droplets.create(droplet)
 end
 
-def info_machine(client, vmname)
-  droplet = client.droplets.find(name: vmname)
+def find_machine_id(vmname)
+  $client.droplets.all.each do |vm|
+    if vm.name == vmname
+      return vm.id
+    end
+  end
 end
 
-def info_all(client)
-  droplet = client.droplets.all
-  puts droplet
+def inventory
+  $client.droplets.all.each do |vm|
+    puts "---"
+    puts "name:    #{vm.name}"
+    puts "id:      #{vm.id}"
+  end
 end
 
-def delete_machine(client, id)
-  puts "Deleting machine called " + vmname
-  client.droplets.delete(name: vmname)
+def delete_machine(vmname)
+  id = find_machine_id(vmname)
+  $client.droplets.delete(id: id)
 end
 
 case cmd
   when 'create'
-  unless global_opts[:name]
-    puts "Generating random hostname"
-    a = /\w{8}/.gen
-  else
-    a = global_opts[:name]
-  end
+    unless global_opts[:name]
+      puts "Generating random hostname"
+      a = /\w{8}/.gen
+    else
+      a = global_opts[:name]
+    end
     create_machine(client, a, config_region, config_image, config_size)
 
   when 'delete'
     a = global_opts[:name]
-    delete_machine(client, a)
+    delete_machine(a)
 
-  when 'info'
-    a = global_opts[:name]
-    info_all(client)
+  when 'inventory'
+    inventory
 end
-
-puts "Done!"
