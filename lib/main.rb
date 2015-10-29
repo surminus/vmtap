@@ -47,7 +47,7 @@ config_size   = config_default[:size]
 def create_machine(vmname, region, image, size)
   droplet = DropletKit::Droplet.new(name: vmname, region: region, image: image, size: size)
   puts "Creating machine called " + vmname
-  client.droplets.create(droplet)
+  $client.droplets.create(droplet)
 end
 
 def find_machine_id(vmname)
@@ -63,6 +63,7 @@ def inventory
     puts "---"
     puts "name:    #{vm.name}"
     puts "id:      #{vm.id}"
+    puts "ip:      #{vm.ip_address}"
   end
 end
 
@@ -79,7 +80,7 @@ case cmd
     else
       a = global_opts[:name]
     end
-    create_machine(client, a, config_region, config_image, config_size)
+    create_machine(a, config_region, config_image, config_size)
 
   when 'delete'
     a = global_opts[:name]
