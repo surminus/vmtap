@@ -63,7 +63,6 @@ def inventory
     puts "---"
     puts "name:    #{vm.name}"
     puts "id:      #{vm.id}"
-    puts "ip:      #{vm.ip_address}"
   end
 end
 
