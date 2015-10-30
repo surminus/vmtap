@@ -4,6 +4,8 @@ require 'droplet_kit'
 require 'randexp'
 require 'pry'
 
+require_relative 'execute'
+
 SUB_COMMANDS = %w(create delete info)
 global_opts = Trollop::options do
   banner <<-EOS
@@ -53,12 +55,6 @@ region = vmspec[:region]
 image  = vmspec[:image]
 size   = vmspec[:size]
 
-def create_machine(vmname, region, image, size)
-  droplet = DropletKit::Droplet.new(name: vmname, region: region, image: image, size: size)
-  puts "Creating machine called " + vmname
-  $client.droplets.create(droplet)
-end
-
 def find_machine_id(vmname)
   $client.droplets.all.each do |vm|
     if vm.name == vmname
@@ -75,10 +71,7 @@ def inventory
   end
 end
 
-def delete_machine(vmname)
-  id = find_machine_id(vmname)
-  $client.droplets.delete(id: id)
-end
+vm = Execute.new
 
 case cmd
   when 'create'
@@ -86,11 +79,12 @@ case cmd
       puts "No name specified, generating..."
       name = /\w{8}/.gen
     end
-  create_machine(name, region, image, size)
+
+  vm.create(name, region, image, size)
 
   when 'delete'
     name = cmd_opts[:name]
-    delete_machine(name)
+    vm.delete(name)
 
   when 'inventory'
     inventory
