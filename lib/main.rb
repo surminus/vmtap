@@ -35,7 +35,9 @@ cmd_opts = case cmd
     end
   when 'delete'
     Trollop::options do
-      opt :name, "Specify name of VM", :type => :string, :required => true
+      opt :name, "Specify name of VM", :type => :string
+      opt :force, "Force delete"
+      opt :all, "Delete ALL machines"
     end
 
   when 'inventory'
@@ -83,8 +85,12 @@ case cmd
   vm.create(name, region, image, size)
 
   when 'delete'
-    name = cmd_opts[:name]
-    vm.delete(name)
+    force = cmd_opts[:force]
+    if cmd_opts[:all]
+      vm.delete_all
+    else
+      vm.delete(name, force)
+    end
 
   when 'inventory'
     inventory
