@@ -1,5 +1,0 @@
----
-default:
-  :region: 'lon1'
-  :image: 'ubuntu-14-04-x64'
-  :size: '512mb'
