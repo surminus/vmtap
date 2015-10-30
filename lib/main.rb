@@ -57,14 +57,6 @@ region = vmspec[:region]
 image  = vmspec[:image]
 size   = vmspec[:size]
 
-def find_machine_id(vmname)
-  $client.droplets.all.each do |vm|
-    if vm.name == vmname
-      return vm.id
-    end
-  end
-end
-
 def inventory
   $client.droplets.all.each do |vm|
     puts "---"
