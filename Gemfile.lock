@@ -12,6 +12,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    coderay (1.1.0)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     descendants_tracker (0.0.4)
@@ -29,11 +30,17 @@ GEM
     ice_nine (0.11.1)
     json (1.8.3)
     kartograph (0.2.3)
+    method_source (0.8.2)
     minitest (5.8.2)
     multipart-post (2.0.0)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     randexp (0.1.7)
     resource_kit (0.1.4)
       addressable (~> 2.3.6)
+    slop (3.6.0)
     thread_safe (0.3.5)
     trollop (2.1.2)
     tzinfo (1.2.2)
@@ -49,5 +56,9 @@ PLATFORMS
 
 DEPENDENCIES
   droplet_kit
+  pry
   randexp
   trollop
+
+BUNDLED WITH
+   1.10.6
