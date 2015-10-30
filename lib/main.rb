@@ -2,47 +2,56 @@ require 'yaml'
 require 'trollop'
 require 'droplet_kit'
 require 'randexp'
+require 'pry'
 
+SUB_COMMANDS = %w(create delete info)
 global_opts = Trollop::options do
   banner <<-EOS
   vmtap is used to quickly spin up droplets using the excellent
   API: https://github.com/digitalocean/droplet_kit
 
-  Usage: vmtap [opts] command
+  Usage: vmtap command [opts]
 
   Commands:
     create
     delete
     info
-    reboot
-    shutdown
-    poweron
 
   Options:
   EOS
 
-  opt :name, "Name of VM", :type => :string
-  opt :config_file, "Specify different machines specs", :type => :string
+  stop_on SUB_COMMANDS
 end
 
 cmd = ARGV.shift
 
-raise "Error: require argument" unless cmd
+cmd_opts = case cmd
+  when 'create'
+    Trollop::options do
+      opt :name, "Specify name of VM", :type => :string
+      opt :file, "Specify different config file for VM specs", :type => :string
+    end
+  when 'delete'
+    Trollop::options do
+      opt :name, "Specify name of VM", :type => :string, :required => true
+    end
 
-token = ENV['OCEAN_TOKEN']
-unless token
-  raise "Set OCEAN_TOKEN environment variable"
+  when 'inventory'
+  else
+    Trollop::die "Unknown command #{cmd.inspect}"
 end
+
+abort("Error: Set OCEAN_TOKEN environment variable") unless token = ENV['OCEAN_TOKEN']
+
 $client = DropletKit::Client.new(access_token: token)
 
 unless global_opts[:config_file]
-  vmspec = YAML.load_file('config/vmspec.yaml')
+  vmspec = YAML.load_file('config/default.yaml')
 end
 
-config_default = vmspec["default"]
-config_region = config_default[:region]
-config_image  = config_default[:image]
-config_size   = config_default[:size]
+region = vmspec[:region]
+image  = vmspec[:image]
+size   = vmspec[:size]
 
 def create_machine(vmname, region, image, size)
   droplet = DropletKit::Droplet.new(name: vmname, region: region, image: image, size: size)
@@ -73,18 +82,19 @@ end
 
 case cmd
   when 'create'
-    unless global_opts[:name]
-      puts "Generating random hostname"
-      a = /\w{8}/.gen
-    else
-      a = global_opts[:name]
+    unless name = cmd_opts[:name]
+      puts "No name specified, generating..."
+      name = /\w{8}/.gen
     end
-    create_machine(a, config_region, config_image, config_size)
+  create_machine(name, region, image, size)
 
   when 'delete'
-    a = global_opts[:name]
-    delete_machine(a)
+    name = cmd_opts[:name]
+    delete_machine(name)
 
   when 'inventory'
     inventory
+
+  else
+    abort("Unrecognised command")
 end
