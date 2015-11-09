@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+
+program :version, '0.0.1'
+program :description, 'Manage droplets with ease'
+
+command :create do |c|
+  c.syntax = 'vmtap create [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Vmtap::Commands::Create
+  end
+end
+
+command :delete do |c|
+  c.syntax = 'vmtap delete [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Vmtap::Commands::Delete
+  end
+end
+
+command :inventory do |c|
+  c.syntax = 'vmtap inventory [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Vmtap::Commands::Inventory
+  end
+end
+
