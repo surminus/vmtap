@@ -45,7 +45,11 @@ cmd_opts = case cmd
     Trollop::die "Unknown command #{cmd.inspect}"
 end
 
-abort("Error: Set OCEAN_TOKEN environment variable") unless token = ENV['OCEAN_TOKEN']
+creds_file = YAML.load_file('config/creds.yaml')
+
+unless token = creds_file[:token] or token = ENV['OCEAN_TOKEN']
+  abort("Error: Set OCEAN_TOKEN environment variable") 
+end
 
 $client = DropletKit::Client.new(access_token: token)
 
@@ -81,6 +85,7 @@ case cmd
     if cmd_opts[:all]
       vm.delete_all
     else
+      name = cmd_opts[:name]
       vm.delete(name, force)
     end
 
