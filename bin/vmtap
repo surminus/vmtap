@@ -2,6 +2,8 @@
 
 require 'rubygems'
 require 'commander/import'
+require_relative '../lib/collect'
+
 
 program :version, '0.0.1'
 program :description, 'Manage droplets with ease'
@@ -11,9 +13,10 @@ command :create do |c|
   c.summary = ''
   c.description = ''
   c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
+  c.option '-n', '--name NAME', String, 'Specify name of new VM'
+  c.option '-f', '--file FILE', String, 'Specify VM spec file'
   c.action do |args, options|
-    # Do something or c.when_called Vmtap::Commands::Create
+    puts options.name
   end
 end
 
@@ -22,7 +25,9 @@ command :delete do |c|
   c.summary = ''
   c.description = ''
   c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
+  c.option '-n', '--name NAME', String, 'Specify name of VM to delete'
+  c.option '-f', '--force', Boolean, 'Force delete'
+  c.option '-a', '--all', Boolean, 'Delete ALL VMs; use with caution!'
   c.action do |args, options|
     # Do something or c.when_called Vmtap::Commands::Delete
   end
@@ -33,9 +38,9 @@ command :inventory do |c|
   c.summary = ''
   c.description = ''
   c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
   c.action do |args, options|
-    # Do something or c.when_called Vmtap::Commands::Inventory
+    execute = Vmtap::Collect.new
+    execute.inventory
   end
 end
 
