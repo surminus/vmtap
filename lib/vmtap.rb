@@ -4,7 +4,8 @@ require 'droplet_kit'
 require 'randexp'
 require 'pry'
 
-require_relative 'execute'
+require_relative 'modify'
+require_relative 'collect'
 
 SUB_COMMANDS = %w(create delete info)
 global_opts = Trollop::options do
@@ -48,7 +49,7 @@ end
 creds_file = YAML.load_file('config/creds.yaml')
 
 unless token = creds_file[:token] or token = ENV['OCEAN_TOKEN']
-  abort("Error: Set OCEAN_TOKEN environment variable") 
+  abort("Error: Set OCEAN_TOKEN environment variable")
 end
 
 $client = DropletKit::Client.new(access_token: token)
@@ -61,15 +62,8 @@ region = vmspec[:region]
 image  = vmspec[:image]
 size   = vmspec[:size]
 
-def inventory
-  $client.droplets.all.each do |vm|
-    puts "---"
-    puts "name:    #{vm.name}"
-    puts "id:      #{vm.id}"
-  end
-end
-
-vm = Execute.new
+modify = Vmtap::Modify.new
+collect = Vmtap::Collect.new
 
 case cmd
   when 'create'
@@ -83,14 +77,14 @@ case cmd
   when 'delete'
     force = cmd_opts[:force]
     if cmd_opts[:all]
-      vm.delete_all
+      modify.delete_all
     else
       name = cmd_opts[:name]
-      vm.delete(name, force)
+      modify.delete(name, force)
     end
 
   when 'inventory'
-    inventory
+    collect.inventory
 
   else
     abort("Unrecognised command")
