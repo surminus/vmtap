@@ -7,14 +7,6 @@ require 'pry'
 require_relative 'modify'
 require_relative 'collect'
 
-creds_file = YAML.load_file('config/creds.yaml')
-
-unless token = creds_file[:token] or token = ENV['OCEAN_TOKEN']
-  abort("Error: Set OCEAN_TOKEN environment variable")
-end
-
-$client = DropletKit::Client.new(access_token: token)
-
 unless global_opts[:config_file]
   vmspec = YAML.load_file('vms/default.yaml')
 end
