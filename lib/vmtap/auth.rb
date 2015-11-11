@@ -4,9 +4,9 @@ require 'droplet_kit'
 module Vmtap
   class Auth
     def initialize
-      creds_file = YAML.load_file('config/creds.yaml')
+      creds_file = YAML.load_file('config/main.yaml')
 
-      unless token = creds_file[:token] or token = ENV['OCEAN_TOKEN']
+      unless token = creds_file['token'] or token = ENV['OCEAN_TOKEN']
           abort("Error: No token set")
       end
 
