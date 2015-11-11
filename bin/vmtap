@@ -3,8 +3,8 @@
 require 'rubygems'
 require 'commander/import'
 require 'randexp'
-require_relative '../lib/collect'
-require_relative '../lib/modify'
+require_relative '../lib/vmtap/collect'
+require_relative '../lib/vmtap/modify'
 
 program :version, '0.0.1'
 program :description, 'Manage droplets with ease'
