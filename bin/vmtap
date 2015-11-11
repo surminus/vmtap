@@ -64,8 +64,12 @@ end
 command :inventory do |c|
   c.syntax = 'vmtap inventory'
   c.summary = 'Display all droplet names & IDs'
+  c.option '-f', '--full', 'Show full details of droplets (in yaml)'
   c.action do |args, options|
+    if options.full
+      verbose = true
+    end
     execute = Vmtap::Collect.new
-    execute.inventory
+    execute.inventory(verbose)
   end
 end

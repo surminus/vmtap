@@ -1,3 +1,4 @@
+require 'yaml'
 require_relative 'auth'
 
 module Vmtap
@@ -22,11 +23,13 @@ module Vmtap
       end
     end
 
-    def inventory
+    def inventory(verbose)
       $client.droplets.all.each do |vm|
-        puts "---"
-        puts "name:    #{vm.name}"
-        puts "id:      #{vm.id}"
+        if verbose
+          puts vm.to_yaml
+        else
+          puts "#{vm.id}: #{vm.name}"
+        end
       end
     end
   end
