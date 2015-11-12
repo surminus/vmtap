@@ -10,7 +10,7 @@ variables to spin up VMs with all my requirements.
 
 You can specify tokens in two ways:
 
-* Create a config yaml file in config/main.yaml and add a token hash such as this:
+* Create a config yaml file in the root directory called `config.yaml` and add a token hash such as this:
 ```
 ---
 token: <token here>
