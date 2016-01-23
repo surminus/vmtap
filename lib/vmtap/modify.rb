@@ -13,13 +13,24 @@ module Vmtap
 
       vmspec = YAML.load_file(config_file)
 
-      region = vmspec[:region]
-      image  = vmspec[:image]
-      size   = vmspec[:size]
+      payload = {
+        'name'      => vmname,
+        'region'    => vmspec['region'],
+        'image'     => vmspec['image'],
+        'size'      => vmspec['size'],
+      }
 
-      droplet = DropletKit::Droplet.new(name: vmname, region: region, image: image, size: size)
+      if vmspec['bootstrap']
+        bootstrap_file = vmspec['bootstrap']
+        f = open(bootstrap_file)
+        user_data = f.read
+        payload['user_data'] = user_data
+      end
+
+      droplet = DropletKit::Droplet.new(payload)
       puts "Creating machine called " + vmname
       $client.droplets.create(droplet)
+
       puts "Done!"
     end
 
